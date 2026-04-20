@@ -2,62 +2,48 @@
 <html>
 <head>
     <style>
-        /* Making the button much bigger and nicer */
-        .big-download-btn {
-            background-color: #28a745;
+        .massive-btn {
+            background-color: #ff4757;
             color: white;
-            padding: 30px 60px;
-            font-size: 24px;
-            font-weight: bold;
+            padding: 50px 100px;
+            font-size: 36px;
+            font-family: Arial, sans-serif;
+            font-weight: 900;
             border: none;
-            border-radius: 12px;
+            border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.4);
+            text-transform: uppercase;
         }
-        .big-download-btn:active {
-            transform: scale(0.95);
-        }
+        .massive-btn:hover { background-color: #ff6b81; }
     </style>
 </head>
-<body>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
 
-    <button class="big-download-btn" onclick="forceDownloadAll()">
-        🚀 DOWNLOAD ALL IMAGES NOW
+    <button class="massive-btn" onclick="startMultiDownload()">
+        Download All Images
     </button>
 
     <script>
-        async function forceDownloadAll() {
+        function startMultiDownload() {
+            // REPLACE THESE with your actual file paths
             const images = [
-                'image1.jpg',
-                'image2.png',
-                'image3.webp'
+                { url: 'image1.png', filename: 'photo1.png' },
+                { url: 'image2.png', filename: 'photo2.png' },
+                { url: 'image3.jpg', filename: 'photo3.jpg' }
             ];
 
-            for (const [index, url] of images.entries()) {
-                try {
-                    // Fetch the image and convert to a blob to bypass display-only behavior
-                    const response = await fetch(url);
-                    const blob = await response.blob();
-                    const blobUrl = window.URL.createObjectURL(blob);
-
+            images.forEach((img, index) => {
+                // We add a delay (index * 800ms) to prevent the browser from blocking simultaneous downloads
+                setTimeout(() => {
                     const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = `file_${index + 1}${url.substring(url.lastIndexOf('.'))}`;
+                    link.href = img.url;
+                    link.download = img.filename; // THIS forces the JPG/PNG extension
                     document.body.appendChild(link);
                     link.click();
-                    
-                    // Cleanup
                     document.body.removeChild(link);
-                    window.URL.revokeObjectURL(blobUrl);
-                    
-                    // Small delay to ensure the browser registers each download
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                } catch (error) {
-                    console.error("Could not download " + url, error);
-                    alert("Security block: Cannot download external image " + url + " directly.");
-                }
-            }
+                }, index * 800); 
+            });
         }
     </script>
 </body>
