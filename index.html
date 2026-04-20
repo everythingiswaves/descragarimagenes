@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- The button that triggers the script -->
+    <button onclick="downloadAll()">Download 3 Images</button>
+
+    <script>
+        function downloadAll() {
+            // 1. List your image URLs here
+            const images = [
+                'image1.png',
+                'image2.png',
+                'image3.jpg'
+            ];
+
+            // 2. Loop through each URL
+            images.forEach((url, index) => {
+                // A small delay (100ms) helps prevent browsers from blocking them
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `image_${index + 1}`; // Optional: renames files
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, index * 100); 
+            });
+        }
+    </script>
+</body>
+</html>
