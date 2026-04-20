@@ -1,30 +1,63 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <style>
+        /* Making the button much bigger and nicer */
+        .big-download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 30px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .big-download-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
 <body>
-    <!-- The button that triggers the script -->
-    <button onclick="downloadAll()">Download 3 Images</button>
+
+    <button class="big-download-btn" onclick="forceDownloadAll()">
+        🚀 DOWNLOAD ALL IMAGES NOW
+    </button>
 
     <script>
-        function downloadAll() {
-            // 1. List your image URLs here
+        async function forceDownloadAll() {
             const images = [
-                'image1.png',
+                'image1.jpg',
                 'image2.png',
-                'image3.jpg'
+                'image3.webp'
             ];
 
-            // 2. Loop through each URL
-            images.forEach((url, index) => {
-                // A small delay (100ms) helps prevent browsers from blocking them
-                setTimeout(() => {
+            for (const [index, url] of images.entries()) {
+                try {
+                    // Fetch the image and convert to a blob to bypass display-only behavior
+                    const response = await fetch(url);
+                    const blob = await response.blob();
+                    const blobUrl = window.URL.createObjectURL(blob);
+
                     const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `image_${index + 1}`; // Optional: renames files
+                    link.href = blobUrl;
+                    link.download = `file_${index + 1}${url.substring(url.lastIndexOf('.'))}`;
                     document.body.appendChild(link);
                     link.click();
+                    
+                    // Cleanup
                     document.body.removeChild(link);
-                }, index * 100); 
-            });
+                    window.URL.revokeObjectURL(blobUrl);
+                    
+                    // Small delay to ensure the browser registers each download
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } catch (error) {
+                    console.error("Could not download " + url, error);
+                    alert("Security block: Cannot download external image " + url + " directly.");
+                }
+            }
         }
     </script>
 </body>
